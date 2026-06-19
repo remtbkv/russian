@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Keyboard from '../components/Keyboard'
 import { charToKey, codeToChar } from '../lib/keyboard'
 import { TYPING_LESSONS } from '../lib/content'
@@ -8,11 +8,6 @@ const isCyrillic = (ch: string) => ch.length === 1 && /[а-яёА-ЯЁ]/.test(ch
 const FREE = 'free'
 
 export default function Type() {
-  const isTouch = useMemo(
-    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
-    [],
-  )
-
   const [lessonId, setLessonId] = useState(TYPING_LESSONS[0].id)
   const [itemIdx, setItemIdx] = useState(0)
   const [best, setBest] = useState(() => load<number>('type.bestWpm', 0))
@@ -317,12 +312,6 @@ export default function Type() {
             pressedCorrect={pressed?.ok}
           />
         </div>
-      )}
-
-      {isTouch && (
-        <p className="text-center text-xs text-[var(--color-muted)]">
-          On mobile, use your own Russian keyboard.
-        </p>
       )}
     </div>
   )
