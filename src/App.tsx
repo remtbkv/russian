@@ -5,6 +5,7 @@ import Watch from './modules/Watch'
 import Write from './modules/Write'
 import Vocab from './modules/Vocab'
 import Sounds from './modules/Sounds'
+import Grammar from './modules/Grammar'
 import { load, save } from './lib/storage'
 
 const TABS = [
@@ -12,6 +13,7 @@ const TABS = [
   { id: 'read', label: 'Read', el: <Read /> },
   { id: 'watch', label: 'Watch', el: <Watch /> },
   { id: 'write', label: 'Write', el: <Write /> },
+  { id: 'grammar', label: 'Grammar', el: <Grammar /> },
   { id: 'vocab', label: 'Vocab', el: <Vocab /> },
   { id: 'sounds', label: 'Sounds', el: <Sounds /> },
 ] as const

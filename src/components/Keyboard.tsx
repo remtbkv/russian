@@ -3,11 +3,18 @@ import { QWERTY, ROWS } from '../lib/keyboard'
 type Props = {
   nextCode: string | null
   shiftNeeded?: boolean
+  shiftHeld?: boolean
   pressedCode?: string | null
   pressedCorrect?: boolean
 }
 
-export default function Keyboard({ nextCode, shiftNeeded, pressedCode, pressedCorrect }: Props) {
+export default function Keyboard({
+  nextCode,
+  shiftNeeded,
+  shiftHeld,
+  pressedCode,
+  pressedCorrect,
+}: Props) {
   return (
     <div className="mx-auto w-fit select-none space-y-1.5">
       {ROWS.map((row, i) => (
@@ -21,7 +28,7 @@ export default function Keyboard({ nextCode, shiftNeeded, pressedCode, pressedCo
             if (isPressed) {
               cls += pressedCorrect
                 ? ' border-[var(--color-good)] bg-[var(--color-good)] text-white'
-                : ' border-[var(--color-bad)] bg-[var(--color-bad)] text-white'
+                : ' border-[var(--color-bad)]/60 bg-[var(--color-bad)]/15 text-[var(--color-bad)]'
             } else if (isNext) {
               cls +=
                 ' border-[var(--color-accent)] bg-[var(--color-accent-soft)] text-[var(--color-accent)] ring-2 ring-[var(--color-accent)]'
@@ -38,7 +45,7 @@ export default function Keyboard({ nextCode, shiftNeeded, pressedCode, pressedCo
                 >
                   {QWERTY[k.code]}
                 </span>
-                {k.lower}
+                {shiftHeld ? k.upper : k.lower}
               </div>
             )
           })}
