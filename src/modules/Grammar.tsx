@@ -171,7 +171,7 @@ export default function Grammar() {
           </nav>
         )}
 
-        <div ref={contentRef} className={'space-y-10 ' + (q ? 'md:col-span-2' : '')}>
+        <div ref={contentRef} className={'min-w-0 space-y-10 ' + (q ? 'md:col-span-2' : '')}>
           {visible.length === 0 && (
             <p className="text-sm text-[var(--color-muted)]">No grammar matches “{query}”.</p>
           )}

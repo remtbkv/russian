@@ -70,10 +70,10 @@ export default function Vocab() {
         </div>
       ) : (
         <div className="rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-8 text-center">
-          <p className="font-cyr text-3xl">{current.front}</p>
+          <p className="break-words font-cyr text-3xl">{current.front}</p>
           {revealed ? (
             <>
-              <p className="mt-4 text-lg text-[var(--color-muted)]">{current.back}</p>
+              <p className="mt-4 break-words text-lg text-[var(--color-muted)]">{current.back}</p>
               <div className="mt-6 flex justify-center gap-3">
                 <button
                   onClick={() => grade(false)}

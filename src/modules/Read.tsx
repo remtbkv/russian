@@ -65,7 +65,7 @@ export default function Read() {
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6 md:grid-cols-[1fr_18rem]">
-      <div className="space-y-4 max-md:pb-[45vh]">
+      <div className="min-w-0 space-y-4 max-md:pb-[45vh]">
         <div className="flex items-center gap-3 text-sm">
           <button
             onClick={() => setReading(false)}
@@ -81,7 +81,7 @@ export default function Read() {
           </button>
         </div>
 
-        <div className="font-cyr leading-relaxed" style={{ fontSize: size }}>
+        <div className="break-words font-cyr leading-relaxed" style={{ fontSize: size }}>
           {text.split('\n').map((para, pi) => (
             <p key={pi} className="mb-4">
               {tokenize(para).map((tok, i) =>
@@ -104,7 +104,7 @@ export default function Read() {
 
       <aside
         className={
-          'rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-4 text-sm ' +
+          'break-words rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-4 text-sm ' +
           'md:sticky md:top-4 md:h-fit ' +
           'max-md:fixed max-md:inset-x-0 max-md:bottom-0 max-md:z-20 max-md:max-h-[45vh] ' +
           'max-md:overflow-auto max-md:rounded-b-none max-md:border-x-0 max-md:shadow-[0_-4px_16px_rgba(0,0,0,0.12)] ' +
@@ -116,7 +116,7 @@ export default function Read() {
         ) : (
           <div className="space-y-3">
             <div className="flex items-start justify-between">
-              <p className="font-cyr text-xl">{sel.word}</p>
+              <p className="min-w-0 break-words font-cyr text-xl">{sel.word}</p>
               <button
                 onClick={() => setSel(null)}
                 className="text-[var(--color-muted)] md:hidden"

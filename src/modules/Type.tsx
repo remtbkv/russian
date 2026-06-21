@@ -230,7 +230,7 @@ export default function Type() {
         <div className="space-y-3">
           <div
             onClick={() => inputRef.current?.focus()}
-            className="min-h-[8rem] cursor-text whitespace-pre-wrap rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-5 font-cyr text-2xl leading-relaxed tracking-wide"
+            className="min-h-[8rem] cursor-text whitespace-pre-wrap break-words rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-5 font-cyr text-2xl leading-relaxed tracking-wide"
           >
             {free || (
               <span className="text-[var(--color-muted)]/60">
