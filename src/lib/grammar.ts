@@ -410,6 +410,114 @@ export const GRAMMAR: GrammarGroup[] = [
     ],
   },
 
+  // ------------------------------------------------- EXISTENCE & IMPERSONALS
+  {
+    id: 'existence',
+    title: 'Having & impersonals',
+    topics: [
+      {
+        id: 'have-есть-нет',
+        title: 'Having / not having (У + Gen)',
+        blocks: [
+          {
+            p: 'Russian has no verb "to have." Possession is **У + genitive (the owner) + есть + nominative (the thing)**. The owner is the *logical subject* (genitive after У); the thing owned is the *logical object* and the **grammatical subject in the nominative**.',
+          },
+          {
+            table: {
+              caption: 'Existence/having vs. absence/lacking — the verb flips the case of the thing',
+              headers: ['', 'There IS / has', 'There is NO / lacks'],
+              rows: [
+                ['Marker', 'есть + Nominative', 'нет + Genitive'],
+                ['Present', 'У меня есть машина', 'У меня нет машины'],
+                ['Past', 'был / была / было / были', 'не́ было (always neuter sg)'],
+                ['Future', 'будет / будут', 'не бу́дет (always sg)'],
+              ],
+            },
+          },
+          {
+            list: [
+              'In the **positive**, the verb agrees with the nominative thing: У Пушкина **были** дети.',
+              'In the **negative**, the thing goes to **genitive** and the verb is frozen: **не́ было** (past), **не бу́дет** (future) — never agree.',
+              '**У + Gen** also = "at someone\'s place": Он у врача́ (he\'s at the doctor\'s); Мы ужинали у друга.',
+              'Drop **есть** when the thing, not its existence, is the point: У меня **краси́вая** маши́на (I have a *nice* car — existence already assumed).',
+            ],
+          },
+          {
+            ex: [
+              { ru: 'У нас в городе есть бассейн.', en: 'There is a pool in our town.' },
+              { ru: 'Вчера у меня не́ было времени.', en: "Yesterday I had no time.", note: 'не было + genitive' },
+              { ru: 'Завтра у него не бу́дет компьютера.', en: "Tomorrow he won't have a computer." },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'impersonal-modals',
+        title: 'Need, must, may — modals & impersonals',
+        blocks: [
+          {
+            p: 'Many "must / need / may / can" ideas use an **impersonal** construction: no nominative subject, the person goes in the **dative**, and the verb is **было** (past) / **бу́дет** (future).',
+          },
+          {
+            table: {
+              headers: ['Word', 'Meaning', 'Construction'],
+              rows: [
+                ['нужно / надо', 'need to, should', 'Dat + нужно + infinitive'],
+                ['можно', 'may, it is possible', '(Dat) + можно + infinitive'],
+                ['нельзя', "may not, can't", '(Dat) + нельзя + infinitive'],
+                ['нужен / нужна / нужно / нужны', 'need (a thing)', 'Dat + нужен + Nominative thing'],
+                ['должен / должна / должны', 'must, obliged', 'Nominative + должен + infinitive'],
+                ['мочь / уметь', 'be able / know how', 'Nominative subject + infinitive'],
+              ],
+            },
+          },
+          {
+            list: [
+              '**можно / нельзя + imperfective** = permission/prohibition; **+ perfective** = possibility/impossibility: Здесь нельзя кури́ть (not allowed); Это нельзя сде́лать (impossible).',
+              '**нужен** is a short adjective and agrees with the nominative thing: Мне нужна́ маши́на; Мне нужны́ де́ньги.',
+              '**должен** agrees with the nominative subject (должен/должна/должно/должны) and takes быть in past/future: Я должна́ была́ позвони́ть.',
+            ],
+          },
+          {
+            ex: [
+              { ru: 'Всем студентам нужно больше отдыхать.', en: 'All students need to rest more.' },
+              { ru: 'Мне нужно было быть дома.', en: 'I had to be at home.', note: 'было — past' },
+              { ru: 'Можно взять эту книгу?', en: 'May I take this book?', note: 'perfective = asking permission now' },
+              { ru: 'Он должен сдать экзамен.', en: 'He must pass the exam.' },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'impersonal-state',
+        title: 'Weather, feelings & age',
+        blocks: [
+          {
+            p: 'State-of-the-world and how-someone-feels use an **adverb** with no subject; the experiencer (if any) is **dative**. Past = **было**, future = **бу́дет**.',
+          },
+          {
+            ex: [
+              { ru: 'На улице хо́лодно.', en: 'It is cold outside.', note: 'no "it", no subject' },
+              { ru: 'Мне хо́лодно.', en: 'I am cold.', note: 'experiencer → dative' },
+              { ru: 'Нам было ску́чно на лекции.', en: 'We were bored at the lecture.' },
+              { ru: 'Трудно говорить по-русски?', en: 'Is it hard to speak Russian?' },
+            ],
+          },
+          {
+            p: '**Age** is also dative — the person is in the dative, the number takes год / го́да / лет (1 / 2–4 / 5+):',
+          },
+          {
+            ex: [
+              { ru: 'Мне два́дцать оди́н год.', en: 'I am 21.' },
+              { ru: 'Моему папе шестьдеся́т два го́да.', en: 'My dad is 62.' },
+              { ru: 'Когда вам было десять лет…', en: 'When you were ten…', note: 'было — past' },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
   // ------------------------------------------------------------------ ADJECTIVES
   {
     id: 'adjectives',
@@ -480,17 +588,20 @@ export const GRAMMAR: GrammarGroup[] = [
         blocks: [
           {
             list: [
-              '**Comparative (predicate):** add **-ее**: быстрый → быстрее, красивый → красивее. Many are irregular: хороший → лучше, плохой → хуже, большой → больше, маленький → меньше.',
-              '**"than"** = **чем** (+ same case) OR drop чем and put the second item in **genitive**: Он старше, чем я = Он старше меня.',
-              '**Attributive comparative:** более + adjective (более интересный).',
-              '**Superlative:** **самый** + adjective (самый большой) — самый agrees fully.',
+              '**Comparative (predicate):** usually add **-ее**: быстрый → быстре́е, краси́вый → краси́вее.',
+              '**Many take a consonant mutation + -е** instead — learn these: доро́же (dear), деше́вле (cheap), вы́ше (high), ти́ше (quiet), ле́гче (easy), гро́мче (loud), моло́же (young), ча́ще (often), ре́же (rare), до́льше (long), ра́ньше (early), по́зже (late).',
+              '**Suppletive irregulars:** хоро́ший → лу́чше, плохо́й → ху́же, большо́й → бо́льше, ма́ленький → ме́ньше.',
+              '**"than"** = **чем** (+ same case) OR drop чем and put the second item in **genitive**: Он ста́рше, чем я = Он ста́рше меня́.',
+              '**Attributive comparative:** бо́лее + adjective (бо́лее интере́сный).',
+              '**Superlative:** **са́мый** + adjective (са́мый большо́й) — самый agrees fully.',
             ],
           },
           {
             ex: [
-              { ru: 'Этот фильм интереснее.', en: 'This film is more interesting.' },
-              { ru: 'Она говорит лучше меня.', en: 'She speaks better than me.', note: 'genitive after comparative' },
-              { ru: 'Это самый высокий дом.', en: 'This is the tallest house.' },
+              { ru: 'Этот фильм интере́снее.', en: 'This film is more interesting.' },
+              { ru: 'Она говори́т лу́чше меня́.', en: 'She speaks better than me.', note: 'genitive after comparative' },
+              { ru: 'Метро деше́вле, чем такси́.', en: 'The metro is cheaper than a taxi.', note: 'mutation в → вл' },
+              { ru: 'Это са́мый высо́кий дом.', en: 'This is the tallest house.' },
             ],
           },
         ],
@@ -592,13 +703,33 @@ export const GRAMMAR: GrammarGroup[] = [
         title: 'Negative & indefinite',
         blocks: [
           {
+            table: {
+              caption: 'Built on the question words: ни- = none, -то / -нибудь = some/any',
+              headers: ['Question', 'Negative ни-', 'Indefinite -то', 'Indefinite -нибудь'],
+              rows: [
+                ['кто', 'никто', 'кто-то', 'кто-нибудь'],
+                ['что', 'ничто / ничего', 'что-то', 'что-нибудь'],
+                ['когда', 'никогда', 'когда-то', 'когда-нибудь'],
+                ['где', 'нигде', 'где-то', 'где-нибудь'],
+                ['куда', 'никуда', 'куда-то', 'куда-нибудь'],
+              ],
+            },
+          },
+          {
             list: [
-              '**Negative:** никто (nobody), ничто/ничего (nothing), никогда (never), нигде (nowhere). They require the verb to also be negated → **double negative**: Я никого не вижу (I see nobody).',
-              '**Indefinite -то** = some specific-but-unknown one: кто-то (someone), что-то, где-то.',
-              '**Indefinite -нибудь** = any one at all: кто-нибудь (anyone), что-нибудь, когда-нибудь.',
+              '**Double negation is obligatory** — the ни- word AND не on the verb, stacking freely: Я никогда́ никому́ ничего́ не говорю́.',
+              'With a preposition, the **ни- splits** around it: ни у кого́, ни с кем, ни о чём.',
+              '**-то = it exists, just unspecified/unknown** (statements, past/present): Кто-то звони́л (someone called — I don\'t know who).',
+              '**-нибудь = any one at all, existence open** (questions, requests, future): Позвони́ кому́-нибудь (call someone/anyone).',
             ],
           },
-          { ex: [{ ru: 'Кто-то звонил.', en: 'Someone called.', note: '(I don\'t know who)' }, { ru: 'Скажи что-нибудь.', en: 'Say something / anything.' }] },
+          {
+            ex: [
+              { ru: 'Ты пригласи́л кого́-нибудь?', en: 'Did you invite anyone?', note: "don't know if you did" },
+              { ru: 'Ты пригласи́л кого́-то?', en: 'You invited someone (didn\'t you)?', note: 'I suspect you did' },
+              { ru: 'Я ничего́ не зна́ю.', en: 'I know nothing.', note: 'genitive of negation: ничего' },
+            ],
+          },
         ],
       },
     ],
@@ -700,6 +831,16 @@ export const GRAMMAR: GrammarGroup[] = [
             ],
           },
           { ex: [{ ru: 'Открой окно!', en: 'Open the window!' }, { ru: 'Говорите медленнее, пожалуйста.', en: 'Please speak more slowly.' }] },
+          {
+            p: '**"Let\'s…" (1st person):** **дава́й(те)** + imperfective infinitive (or perfective мы-form). **"Let him/them…" (3rd person):** **пусть** + present/future verb.',
+          },
+          {
+            ex: [
+              { ru: 'Дава́йте говори́ть по-русски!', en: "Let's speak Russian!" },
+              { ru: 'Дава́й пойдём в кино.', en: "Let's go to the movies.", note: 'perfective мы-form' },
+              { ru: 'Пусть брат ку́пит проду́кты.', en: 'Let my brother buy the groceries.' },
+            ],
+          },
         ],
       },
       {
@@ -707,17 +848,40 @@ export const GRAMMAR: GrammarGroup[] = [
         title: 'Reflexive verbs (-ся / -сь)',
         blocks: [
           {
-            p: 'A verb ending in **-ся** (after consonant) / **-сь** (after vowel) is reflexive. Uses: true reflexive, reciprocal, passive, or just a fixed verb that always has -ся.',
+            p: 'Add **-ся** (after a consonant) / **-сь** (after a vowel) after the normal ending. The verb conjugates as usual; -ся just rides along. **A -ся verb is intransitive** — it can never take a direct object in the accusative, so it governs another case or a preposition. Four jobs:',
+          },
+          {
+            list: [
+              '**True reflexive** — action back on the subject: умыва́ться (wash up), одева́ться (get dressed).',
+              '**Reciprocal** — "each other," usually с + Instr: встреча́ться (meet), ви́деться (see each other), знако́миться с (get acquainted with).',
+              '**Passive** — agent dropped, object promoted to subject: Магази́н открыва́ется в 9 (the store opens / is opened at 9).',
+              '**-ся-only** — no transitive form exists: нра́виться (be liked), наде́яться (hope), смея́ться (laugh).',
+            ],
+          },
+          {
+            p: 'The -ся-only verbs carry fixed case government — learn each with its case:',
+          },
+          {
+            table: {
+              headers: ['Verb', 'Governs', 'Meaning'],
+              rows: [
+                ['боя́ться', '+ Genitive (or что…)', 'to be afraid of'],
+                ['наде́яться', '+ на + Accusative', 'to hope for'],
+                ['смея́ться', '+ над + Instrumental', 'to laugh at'],
+                ['интересова́ться', '+ Instrumental', 'to be interested in'],
+                ['занима́ться', '+ Instrumental', 'to study / do (a pursuit)'],
+                ['находи́ться', '(где?)', 'to be located'],
+              ],
+            },
           },
           {
             ex: [
-              { ru: 'Я умываюсь.', en: 'I wash (myself).', note: 'true reflexive' },
-              { ru: 'Они встречаются.', en: 'They meet (each other).', note: 'reciprocal' },
-              { ru: 'Мне нравится…', en: 'I like…', note: 'нравиться is inherently -ся' },
-              { ru: 'Урок начинается.', en: 'The lesson begins.' },
+              { ru: 'Я бою́сь больши́х соба́к.', en: 'I am afraid of big dogs.', note: 'genitive' },
+              { ru: 'На что ты наде́ешься?', en: 'What are you hoping for?', note: 'на + accusative' },
+              { ru: 'Почему ты смеёшься над на́ми?', en: 'Why are you laughing at us?', note: 'над + instrumental' },
+              { ru: 'Чем вы интересу́етесь?', en: 'What are you interested in?', note: 'instrumental' },
             ],
           },
-          { note: 'A reflexive verb cannot also take a direct object in the accusative.' },
         ],
       },
       {
@@ -725,13 +889,21 @@ export const GRAMMAR: GrammarGroup[] = [
         title: 'Conditional & subjunctive (бы)',
         blocks: [
           {
-            p: 'Russian has **no separate conditional conjugation**. Use **past tense + the particle бы** for both "would" and hypothetical "if".',
+            p: 'Russian has **no conditional conjugation**. Everything hypothetical uses the **past tense + the particle бы** (placed after the first stressed word or right after the verb). Russian does not mark tense in the subjunctive — context tells you present vs. past.',
+          },
+          {
+            list: [
+              '**Real condition** (likely): **если …, (то) …** with ordinary tenses. Future "if" needs a real future in both clauses: Если ты придёшь, мы пойдём.',
+              '**Unreal/hypothetical:** **если бы + past, … бы + past.** Если бы я знал, я бы сказал = If I (had) known, I would (have) said.',
+              '**Wish / "would":** бы + past alone — Я бы вы́пил ко́фе (I\'d have a coffee); Ты бы отдохну́л (you should rest).',
+              '**чтобы + past** for a wish/command with a *different* subject (see Clauses below).',
+            ],
           },
           {
             ex: [
-              { ru: 'Я хотел бы кофе.', en: 'I would like a coffee.' },
-              { ru: 'Если бы я знал, я бы сказал.', en: 'If I had known, I would have said.', note: 'если бы … past, … бы past' },
-              { ru: 'Я хочу, чтобы ты пришёл.', en: 'I want you to come.', note: 'чтобы + past = wish/purpose with a different subject' },
+              { ru: 'Если бы у меня было время, я бы пригото́вил ужин.', en: 'If I had time, I would cook dinner.' },
+              { ru: 'Если бы Пушкин не у́мер, ему было бы 226 лет.', en: 'If Pushkin had not died, he would be 226.' },
+              { ru: 'А что, если бы…?', en: 'What if…?' },
             ],
           },
         ],
@@ -806,11 +978,22 @@ export const GRAMMAR: GrammarGroup[] = [
         blocks: [
           {
             list: [
-              'Habit / repetition / "used to" → **imperfective** (Каждый день я делаю зарядку).',
-              'A single finished action with a result → **perfective** (Я уже сделал).',
-              'Two actions at the same time / background → imperfective; one completed action interrupting → perfective.',
-              'Negated commands → almost always **imperfective** (Не бери это).',
-              'Asking simply whether an action happened at all → often imperfective (Ты читал эту книгу?).',
+              'Habit / repetition / "used to" → **imperfective** (Ка́ждый день я де́лаю заря́дку). Clue words: всегда́, обы́чно, ча́сто, ка́ждый день.',
+              'A single finished action with a result → **perfective** (Я уже́ сде́лал). Clue words: уже́ (already), вдруг (suddenly).',
+              'Two actions at the same time / background → **imperfective**; one completed action interrupting → **perfective**: Когда я гото́вил у́жин (impf), ты позвони́л (pf).',
+              'A chain of completed actions one after another → **perfective**: прочита́л, перевёл и написа́л.',
+              'Negated commands → almost always **imperfective** (Не бери́ это).',
+            ],
+          },
+          {
+            p: '**The fact-vs-result trap.** With a plain past question, imperfective asks *did it happen at all?*, perfective asks *is the result here now?*',
+          },
+          {
+            ex: [
+              { ru: 'Вы чита́ли э́тот рома́н?', en: 'Have you ever read this novel?', note: 'impf — fact: did you, at some point?' },
+              { ru: 'Вы прочита́ли э́тот рома́н?', en: 'Have you finished this novel?', note: 'pf — result expected (e.g. the assignment)' },
+              { ru: 'Я не звони́ла ма́ме.', en: "I didn't call mom.", note: 'impf — it just didn\'t happen' },
+              { ru: 'Я не позвони́ла ма́ме.', en: "I failed to call mom.", note: 'pf — I was supposed to and didn\'t' },
             ],
           },
         ],
@@ -867,6 +1050,27 @@ export const GRAMMAR: GrammarGroup[] = [
             ],
           },
           { ex: [{ ru: 'Он пришёл домой.', en: 'He arrived home.', note: 'perfective' }, { ru: 'Поезд уходит в пять.', en: 'The train leaves at five.' }] },
+          {
+            p: 'Direction is marked three ways depending on the question — **где? (location)**, **куда? (destination)**, **откуда? (source)** — and each pairs a preposition with a case:',
+          },
+          {
+            table: {
+              headers: ['', 'где? (at)', 'куда? (to)', 'откуда? (from)'],
+              rows: [
+                ['в-words', 'в + Prep', 'в + Acc', 'из + Gen'],
+                ['на-words', 'на + Prep', 'на + Acc', 'с + Gen'],
+                ["a person's place", 'у + Gen', 'к + Dat', 'от + Gen'],
+                ['here / there / home', 'здесь / там / дома', 'сюда / туда / домой', 'отсюда / оттуда / из дому'],
+              ],
+            },
+          },
+          {
+            ex: [
+              { ru: 'Он пришёл на рабо́ту в 9, а ушёл с рабо́ты в 5.', en: 'He came to work at 9 and left work at 5.', note: 'на → с' },
+              { ru: 'Ко мне приходи́л друг.', en: 'A friend came over (and left).', note: 'multidir: round trip' },
+              { ru: 'Ко мне пришёл друг.', en: 'A friend has come (still here).', note: 'unidir perfective: one way' },
+            ],
+          },
         ],
       },
     ],
@@ -956,10 +1160,11 @@ export const GRAMMAR: GrammarGroup[] = [
           {
             list: [
               '**Ordinals** are adjectives: первый, второй, третий, пятый… (первый этаж).',
-              '**Telling the hour:** Сейчас два часа / пять часов (часа after 2-4, часов after 5+).',
-              '**"At" a time:** в + accusative — в три часа, в час.',
-              '**Dates — "on the Nth":** ordinal in **genitive**: первого мая, двадцать пятого декабря.',
-              '**Year "in":** в + ordinal + году: в две тысячи двадцать шестом году.',
+              '**"What is the date?"** — Nominative neuter ordinal + month in **genitive**: Сего́дня **деся́тое** **февраля́** (today is the 10th of February). Past: Вчера́ **бы́ло** девя́тое.',
+              '**"On" a date** — ordinal goes to **genitive** + month in genitive: Я роди́лся **деся́того** **ма́я**.',
+              '**Year "in"** — в + ordinal in Prepositional + году́: **в** две ты́сячи два́дцать шесто́м **году́**. With a full date, the year is genitive: …ты́сяча девятьсо́т во́семьдесят второ́го **го́да**.',
+              '**Telling the hour:** Сейча́с **два часа́ / пять часо́в** (час / часа́ after 2–4 / часо́в after 5+). "At" a time = **в + Accusative**: в три часа́, в час.',
+              '**Winter & fall months stress the ending:** ноября́, декабря́, сентября́, октября́.',
             ],
           },
         ],
@@ -1041,19 +1246,51 @@ export const GRAMMAR: GrammarGroup[] = [
         ],
       },
       {
-        id: 'conjunctions',
-        title: 'Conjunctions & linkers',
+        id: 'conj-i-a-no',
+        title: 'и vs а vs но',
+        blocks: [
+          {
+            p: 'Three little words English blurs into "and/but." Getting **а** right is the giveaway of a real learner.',
+          },
+          {
+            table: {
+              headers: ['', 'Use', 'Sense'],
+              rows: [
+                ['и', 'same/adding, parallel', 'and (also, so too)'],
+                ['а', 'contrast / different-but-not-opposed; shift of topic', 'and / whereas / while; "but rather"'],
+                ['но', 'a limitation or genuine obstacle', 'but (however, yet)'],
+              ],
+            },
+          },
+          {
+            list: [
+              '**а** pairs two things that simply differ: Я студе́нт, **а** он профе́ссор.',
+              '**но** signals something counter to expectation: Он говори́т по-русски хорошо́, **но** ме́дленно.',
+              '**не …, а …** = "not X but (rather) Y": Она не ру́сская, **а** украи́нка.',
+              'Comma rules: always a comma before **а** and **но**; before **и** only when it joins two clauses with different subjects.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'conj-clauses',
+        title: 'что, чтобы & purpose',
         blocks: [
           {
             list: [
-              '**и** (and), **а** (and/but — contrast), **но** (but), **или** (or).',
-              '**что** (that — reporting): Я думаю, что он прав.',
-              '**чтобы** (in order to / so that — + infinitive or + past): чтобы выучить, чтобы ты знал.',
-              '**потому что** (because), **поэтому** (therefore), **если** (if), **когда** (when), **хотя** (although).',
-              'A clause is normally **set off with a comma** — Russian punctuates subordinate clauses strictly.',
+              '**что** = "that" reporting a fact/thought, ordinary tenses kept: Я ду́маю, **что** он прав.',
+              '**чтобы + infinitive** = "in order to," when **the subject is the same** in both clauses: Я пришёл, **чтобы** помо́чь.',
+              '**чтобы + past** = wish/request/command when **the subject differs**: Я хочу́, **чтобы** ты **пришёл**; Ма́ма попроси́ла, **чтобы** мы позвони́ли.',
+              '**Linkers:** потому́ что (because), поэ́тому (therefore), е́сли (if), когда́ (when), хотя́ (although), пока́ (while).',
             ],
           },
-          { ex: [{ ru: 'Я учу русский, потому что хочу читать книги.', en: 'I study Russian because I want to read books.' }] },
+          {
+            ex: [
+              { ru: 'Чтобы хорошо говори́ть по-русски, на́до мно́го практикова́ться.', en: 'To speak Russian well, you must practice a lot.', note: 'same subject → infinitive' },
+              { ru: 'Я хочу, чтобы экза́мен был лёгким.', en: 'I want the exam to be easy.', note: 'different subject → past' },
+              { ru: 'Говоря́т, что в Швейца́рии всё до́рого.', en: 'They say everything is expensive in Switzerland.', note: 'indefinite-personal: они-form, no subject' },
+            ],
+          },
         ],
       },
     ],

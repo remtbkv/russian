@@ -1,11 +1,21 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import Keyboard from '../components/Keyboard'
+import { codeToChar } from '../lib/keyboard'
 import { WRITING_PROMPTS } from '../lib/content'
 import { load, save } from '../lib/storage'
+
+const isCyrillic = (ch: string) => ch.length === 1 && /[а-яёА-ЯЁ]/.test(ch)
 
 export default function Write() {
   const [idx, setIdx] = useState(() => load<number>('write.idx', 0))
   const [text, setText] = useState(() => load<string>('write.text', ''))
   const [copied, setCopied] = useState(false)
+
+  const taRef = useRef<HTMLTextAreaElement>(null)
+  const [pressed, setPressed] = useState<{ code: string } | null>(null)
+  const [shiftHeld, setShiftHeld] = useState(false)
+  const [capsOn, setCapsOn] = useState(false)
+  const flashTimer = useRef<number | null>(null)
 
   const prompt = WRITING_PROMPTS[idx]
 
@@ -20,6 +30,49 @@ export default function Write() {
   }
 
   const words = text.trim() ? text.trim().split(/\s+/).length : 0
+
+  const flash = (code: string) => {
+    setPressed({ code })
+    if (flashTimer.current) clearTimeout(flashTimer.current)
+    flashTimer.current = window.setTimeout(() => setPressed(null), 160)
+  }
+
+  // Positional ЙЦУКЕН input: on a US layout the physical key produces the Cyrillic
+  // letter in its ЙЦУКЕН position. If the OS already sends Cyrillic (Russian layout
+  // or a phone keyboard), we let it through untouched.
+  function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    const caps = e.getModifierState('CapsLock')
+    setCapsOn(caps)
+    if (e.key === 'Shift') return setShiftHeld(true)
+    if (e.metaKey || e.ctrlKey || e.altKey) return // shortcuts (copy/paste/etc.)
+    if (isCyrillic(e.key)) return // OS already produced Cyrillic
+    if (e.code === 'Space' || e.code === 'Enter' || e.code === 'Tab') return
+    const lower = codeToChar(e.code, false)
+    if (lower == null) return // unmapped (digits, arrows, etc.) — normal behavior
+    const isLetter = /[а-яё]/.test(lower)
+    const ch = codeToChar(e.code, isLetter ? e.shiftKey !== caps : e.shiftKey)
+    if (ch == null) return
+    e.preventDefault()
+    const ta = taRef.current
+    if (!ta) return
+    const s = ta.selectionStart
+    const end = ta.selectionEnd
+    update(text.slice(0, s) + ch + text.slice(end))
+    flash(e.code)
+    // restore caret right after the inserted char once React re-renders
+    requestAnimationFrame(() => {
+      ta.selectionStart = ta.selectionEnd = s + ch.length
+    })
+  }
+
+  function onKeyUp(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Shift') setShiftHeld(false)
+    setCapsOn(e.getModifierState('CapsLock'))
+  }
+
+  useEffect(() => {
+    taRef.current?.focus()
+  }, [idx])
 
   async function exportForGrading() {
     const payload =
@@ -55,10 +108,14 @@ export default function Write() {
       </div>
 
       <textarea
+        ref={taRef}
         autoFocus
         value={text}
         onChange={(e) => update(e.target.value)}
-        rows={12}
+        onKeyDown={onKeyDown}
+        onKeyUp={onKeyUp}
+        onBlur={() => setShiftHeld(false)}
+        rows={10}
         placeholder="Пишите здесь…"
         className="w-full rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-4 font-cyr text-lg leading-relaxed"
       />
@@ -73,6 +130,16 @@ export default function Write() {
         >
           {copied ? 'Copied — paste to chat ✓' : 'Export for grading'}
         </button>
+      </div>
+
+      {/* ЙЦУКЕН reference — your physical keys map here; hidden on mobile (own keyboard) */}
+      <div className="hidden pt-2 md:block">
+        <Keyboard
+          nextCode={null}
+          shiftHeld={shiftHeld !== capsOn}
+          pressedCode={pressed?.code ?? null}
+          pressedCorrect={true}
+        />
       </div>
     </div>
   )

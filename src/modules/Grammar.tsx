@@ -154,12 +154,9 @@ export default function Grammar() {
             {GRAMMAR.map((g) => (
               <button
                 key={g.id}
-                onClick={() => {
-                  setActiveGroup(g.id)
-                  contentRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-                }}
+                onClick={() => setActiveGroup(g.id)}
                 className={
-                  'shrink-0 rounded-md px-3 py-1.5 text-left text-sm transition-colors ' +
+                  'shrink-0 cursor-pointer rounded-md px-3 py-1.5 text-left text-sm transition-colors ' +
                   (g.id === activeGroup
                     ? 'bg-[var(--color-accent-soft)] font-medium text-[var(--color-accent)]'
                     : 'text-[var(--color-muted)] hover:text-[var(--color-ink)]')
