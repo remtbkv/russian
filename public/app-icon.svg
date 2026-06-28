@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#2b4a63"/>
+  <!-- cap -->
+  <rect x="206" y="62" width="100" height="56" rx="9" fill="#c0392b"/>
+  <rect x="210" y="112" width="92" height="16" fill="#8f2d23"/>
+  <!-- neck -->
+  <rect x="222" y="126" width="68" height="94" fill="#eef6fc"/>
+  <!-- body -->
+  <path d="M222 218 C222 254 150 268 150 322 L150 432 Q150 462 180 462 L332 462 Q362 462 362 432 L362 322 C362 268 290 254 290 218 Z"
+        fill="#eef6fc" stroke="#16344a" stroke-width="9"/>
+  <!-- clear liquid -->
+  <path d="M150 332 L362 332 L362 432 Q362 462 332 462 L180 462 Q150 462 150 432 Z" fill="#bfe0f2"/>
+  <!-- label with red stripe -->
+  <rect x="150" y="300" width="212" height="96" fill="#fbfbfb"/>
+  <rect x="150" y="350" width="212" height="20" fill="#c0392b"/>
+</svg>

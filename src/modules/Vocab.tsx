@@ -139,20 +139,25 @@ export default function Vocab() {
           Load a Quizlet set from the Russ ААБ class into your review deck.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <select
-            value={deckId}
-            onChange={(e) => {
-              setDeckId(e.target.value)
-              setDeckMsg('')
-            }}
-            className="min-w-0 flex-1 rounded-md border border-[var(--color-line)] bg-[var(--color-card)] px-3 py-1.5 text-sm"
-          >
-            {DECKS.map((d) => (
-              <option key={d.id} value={d.id}>
-                {d.title} ({d.cards.length})
-              </option>
-            ))}
-          </select>
+          <div className="relative min-w-0 flex-1">
+            <select
+              value={deckId}
+              onChange={(e) => {
+                setDeckId(e.target.value)
+                setDeckMsg('')
+              }}
+              className="w-full appearance-none rounded-md border border-[var(--color-line)] bg-[var(--color-card)] py-1.5 pl-3 pr-9 text-sm"
+            >
+              {DECKS.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.title} ({d.cards.length})
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">
+              ▾
+            </span>
+          </div>
           <button
             onClick={addDeck}
             className="shrink-0 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm text-white"

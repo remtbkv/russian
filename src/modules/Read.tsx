@@ -73,12 +73,25 @@ export default function Read() {
           >
             ← Edit text
           </button>
-          <button onClick={() => setFont(size - 2)} className="px-2" aria-label="Smaller text">
-            A−
-          </button>
-          <button onClick={() => setFont(size + 2)} className="px-2" aria-label="Larger text">
-            A+
-          </button>
+          <div className="inline-flex items-center overflow-hidden rounded-md border border-[var(--color-line)]">
+            <button
+              onClick={() => setFont(size - 2)}
+              className="px-3 py-1 text-base leading-none hover:bg-[var(--color-accent-soft)]"
+              aria-label="Smaller text"
+            >
+              −
+            </button>
+            <span className="border-x border-[var(--color-line)] px-2.5 py-1 text-xs text-[var(--color-muted)]">
+              Font
+            </span>
+            <button
+              onClick={() => setFont(size + 2)}
+              className="px-3 py-1 text-base leading-none hover:bg-[var(--color-accent-soft)]"
+              aria-label="Larger text"
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div className="break-words font-cyr leading-relaxed" style={{ fontSize: size }}>

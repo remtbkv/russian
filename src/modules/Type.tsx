@@ -9,8 +9,14 @@ const FREE = 'free'
 
 export default function Type() {
   const [lessonId, setLessonId] = useState(TYPING_LESSONS[0].id)
-  const [itemIdx, setItemIdx] = useState(0)
-  const [best, setBest] = useState(() => load<number>('type.bestWpm', 0))
+  const [itemIdx, setItemIdx] = useState(() => {
+    const n = TYPING_LESSONS[0].items.length
+    return n > 1 ? Math.floor(Math.random() * n) : 0
+  })
+  const recent = useRef<number[]>([]) // recently shown indices, to avoid repeats
+  const [autoNext, setAutoNext] = useState(() => load<boolean>('type.autoNext', false))
+  const [correctLetters, setCorrectLetters] = useState(() => load<number>('type.correctLetters', 0))
+  const [correctWords, setCorrectWords] = useState(() => load<number>('type.correctWords', 0))
 
   const isFree = lessonId === FREE
   const lesson = TYPING_LESSONS.find((l) => l.id === lessonId)
@@ -18,7 +24,7 @@ export default function Type() {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // typing state (refs for handlers, mirrored to state for render)
+  // per-word typing state (refs for handlers, mirrored to render via force)
   const pos = useRef(0)
   const errors = useRef(0)
   const startedAt = useRef<number | null>(null)
@@ -28,11 +34,13 @@ export default function Type() {
   const [pressed, setPressed] = useState<{ ok: boolean; code?: string } | null>(null)
   const [shiftHeld, setShiftHeld] = useState(false)
   const [capsOn, setCapsOn] = useState(false)
+  const [wrongCh, setWrongCh] = useState<string | null>(null)
+  const shakeKey = useRef(0)
   const [done, setDone] = useState<{ wpm: number; acc: number } | null>(null)
+  const [lastStats, setLastStats] = useState<{ wpm: number; acc: number } | null>(null)
   const [free, setFree] = useState('')
   const [copied, setCopied] = useState(false)
 
-  // brief flash on a key, then clear so it doesn't linger
   const flashTimer = useRef<number | null>(null)
   const flash = (ok: boolean, code?: string) => {
     setPressed({ ok, code })
@@ -45,6 +53,7 @@ export default function Type() {
     errors.current = 0
     startedAt.current = null
     setPressed(null)
+    setWrongCh(null)
     setDone(null)
     rerender()
   }
@@ -54,8 +63,6 @@ export default function Type() {
     inputRef.current?.focus()
   }, [target, lessonId])
 
-  // Stay ready to type: refocus when the tab/window regains focus, so coming
-  // back to the page never needs a click.
   useEffect(() => {
     const refocus = () => inputRef.current?.focus()
     window.addEventListener('focus', refocus)
@@ -66,41 +73,75 @@ export default function Type() {
     }
   }, [])
 
+  const bumpLetters = () =>
+    setCorrectLetters((n) => {
+      const v = n + 1
+      save('type.correctLetters', v)
+      return v
+    })
+  const bumpWords = () =>
+    setCorrectWords((n) => {
+      const v = n + 1
+      save('type.correctWords', v)
+      return v
+    })
+
+  function finishWord() {
+    const mins = (performance.now() - (startedAt.current ?? performance.now())) / 60000
+    const wpm = mins > 0 ? Math.round(target.length / 5 / mins) : 0
+    const total = target.length + errors.current
+    const acc = total > 0 ? Math.round((target.length / total) * 100) : 100
+    setLastStats({ wpm, acc })
+    bumpWords()
+    if (autoNext) advance()
+    else setDone({ wpm, acc })
+  }
+
+  // Pick a random next item, avoiding the current one and the last few shown so
+  // consecutive drills aren't the same or too close together.
+  function advance() {
+    const n = lesson?.items.length ?? 1
+    if (n <= 1) {
+      setItemIdx(0)
+      return
+    }
+    const k = Math.max(0, Math.min(n - 2, 4))
+    const avoid = new Set<number>([itemIdx, ...recent.current.slice(-k)])
+    let c = itemIdx
+    while (avoid.has(c)) c = Math.floor(Math.random() * n)
+    recent.current.push(c)
+    if (recent.current.length > 20) recent.current.shift()
+    setItemIdx(c)
+  }
+
   function commit(ch: string, code?: string) {
     if (done) return
     if (startedAt.current == null) startedAt.current = performance.now()
     const ok = ch === target[pos.current]
     flash(ok, code)
     if (ok) {
+      setWrongCh(null)
+      bumpLetters()
       pos.current += 1
-      if (pos.current >= target.length) {
-        const mins = (performance.now() - (startedAt.current ?? 0)) / 60000
-        const wpm = mins > 0 ? Math.round(target.length / 5 / mins) : 0
-        const total = target.length + errors.current
-        const acc = total > 0 ? Math.round((target.length / total) * 100) : 100
-        setDone({ wpm, acc })
-        if (wpm > best) {
-          setBest(wpm)
-          save('type.bestWpm', wpm)
-        }
-      }
+      if (pos.current >= target.length) finishWord()
     } else {
       errors.current += 1
+      setWrongCh(ch)
+      shakeKey.current += 1
     }
     rerender()
   }
 
   function back() {
-    if (pos.current > 0) pos.current -= 1
+    if (wrongCh != null) {
+      setWrongCh(null)
+    } else if (pos.current > 0) {
+      pos.current -= 1
+    }
     rerender()
   }
 
-  // Auto-detect input: if the OS sends a real Cyrillic letter (Russian layout
-  // installed) use it; otherwise map the physical key position to Cyrillic. Works
-  // either way, no mode to toggle. Mobile soft keyboards fall through to onChange.
   function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    // Read the real Caps Lock state straight from the event, so it works no
-    // matter which physical key is remapped to send Caps Lock.
     const caps = e.getModifierState('CapsLock')
     setCapsOn(caps)
     if (e.key === 'Shift') {
@@ -119,15 +160,13 @@ export default function Type() {
     }
     let ch: string | null
     if (isCyrillic(e.key)) {
-      ch = e.key // real Russian layout: OS already applied shift + caps lock
+      ch = e.key
     } else {
-      // Positional mode. Caps Lock only flips letters, not punctuation, so apply
-      // the XOR to letter keys and leave symbol keys on plain shift.
       const lower = codeToChar(e.code, false)
       const isLetter = lower != null && /[а-яё]/.test(lower)
       ch = codeToChar(e.code, isLetter ? e.shiftKey !== caps : e.shiftKey)
     }
-    if (ch == null) return // unknown key — let it through (e.g. mobile -> onChange)
+    if (ch == null) return
     e.preventDefault()
     if (isFree) {
       setFree((s) => s + ch)
@@ -143,7 +182,6 @@ export default function Type() {
     setCapsOn(e.getModifierState('CapsLock'))
   }
 
-  // Fallback for soft keyboards that don't report usable keydown events.
   function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     const v = e.target.value
     if (isFree) {
@@ -152,7 +190,6 @@ export default function Type() {
     } else {
       for (const ch of v) commit(ch)
     }
-    // controlled value is always '' below, so the field clears after each char
   }
 
   const nextChar = target[pos.current] ?? ''
@@ -162,8 +199,18 @@ export default function Type() {
     startedAt.current == null || pos.current === 0
       ? 0
       : Math.round(pos.current / 5 / ((performance.now() - startedAt.current) / 60000))
+  const liveAcc =
+    pos.current + errors.current === 0
+      ? 100
+      : Math.round((pos.current / (pos.current + errors.current)) * 100)
 
-  const nextItem = () => setItemIdx((i) => (i + 1) % (lesson?.items.length ?? 1))
+  // What to show in the header: the just-finished word's stats until you start the
+  // next one (so auto-next still surfaces them), otherwise the live numbers.
+  const fresh = pos.current === 0 && wrongCh == null
+  const showWpm = done ? done.wpm : fresh && lastStats ? lastStats.wpm : liveWpm
+  const showAcc = done ? done.acc : fresh && lastStats ? lastStats.acc : liveAcc
+
+  const nextItem = () => advance()
 
   async function copyFree() {
     try {
@@ -171,43 +218,66 @@ export default function Type() {
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
-      /* clipboard blocked — ignore */
+      /* clipboard blocked */
     }
     inputRef.current?.focus()
   }
 
+  const toggleAutoNext = () =>
+    setAutoNext((v) => {
+      save('type.autoNext', !v)
+      return !v
+    })
+
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <select
-          value={lessonId}
-          onChange={(e) => {
-            setLessonId(e.target.value)
-            setItemIdx(0)
-          }}
-          className="rounded-md border border-[var(--color-line)] bg-[var(--color-card)] px-3 py-1.5 text-sm"
-        >
-          {TYPING_LESSONS.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.title}
-            </option>
-          ))}
-          <option value={FREE}>Free type</option>
-        </select>
+        <div className="relative">
+          <select
+            value={lessonId}
+            onChange={(e) => {
+              const v = e.target.value
+              setLessonId(v)
+              const n = TYPING_LESSONS.find((l) => l.id === v)?.items.length ?? 1
+              const start = n > 1 ? Math.floor(Math.random() * n) : 0
+              recent.current = [start]
+              setItemIdx(start)
+            }}
+            className="appearance-none rounded-md border border-[var(--color-line)] bg-[var(--color-card)] py-1.5 pl-3 pr-9 text-sm"
+          >
+            {TYPING_LESSONS.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.title}
+              </option>
+            ))}
+            <option value={FREE}>Free type</option>
+          </select>
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">
+            ▾
+          </span>
+        </div>
 
         {!isFree && (
           <div className="flex items-center gap-4 text-sm text-[var(--color-muted)]">
             <span>
-              WPM <b className="text-[var(--color-ink)]">{done ? done.wpm : liveWpm}</b>
+              WPM <b className="text-[var(--color-ink)]">{showWpm}</b>
             </span>
             <span>
-              best <b className="text-[var(--color-ink)]">{best}</b>
+              acc <b className="text-[var(--color-ink)]">{showAcc}%</b>
             </span>
+            <label className="flex cursor-pointer select-none items-center gap-1.5">
+              <input
+                type="checkbox"
+                checked={autoNext}
+                onChange={toggleAutoNext}
+                className="accent-[var(--color-accent)]"
+              />
+              auto-next
+            </label>
           </div>
         )}
       </div>
 
-      {/* hidden input captures keystrokes (and opens the mobile keyboard) */}
       <input
         ref={inputRef}
         value=""
@@ -222,7 +292,7 @@ export default function Type() {
         autoCorrect="off"
         autoComplete="off"
         spellCheck={false}
-        aria-label={isFree ? 'Free typing' : 'Type the sentence'}
+        aria-label={isFree ? 'Free typing' : 'Type the text'}
         className="sr-only"
       />
 
@@ -264,9 +334,20 @@ export default function Type() {
         >
           <p className="text-center font-cyr text-3xl leading-relaxed tracking-wide">
             {target.split('').map((c, i) => {
+              const isCur = i === pos.current
+              if (isCur && wrongCh != null) {
+                return (
+                  <span
+                    key={`w${shakeKey.current}`}
+                    className={'shake text-[var(--color-bad)] ' + (c === ' ' ? 'px-1' : '')}
+                  >
+                    {wrongCh === ' ' ? c : wrongCh}
+                  </span>
+                )
+              }
               let cls = 'text-[var(--color-muted)]/50'
               if (i < pos.current) cls = 'text-[var(--color-good)]'
-              else if (i === pos.current)
+              else if (isCur)
                 cls =
                   'text-[var(--color-ink)] underline decoration-[var(--color-accent)] decoration-2 underline-offset-4'
               return (
@@ -312,6 +393,13 @@ export default function Type() {
             pressedCorrect={pressed?.ok}
           />
         </div>
+      )}
+
+      {!isFree && (
+        <p className="text-center text-xs text-[var(--color-muted)]">
+          {correctLetters.toLocaleString()} letters · {correctWords.toLocaleString()} words typed
+          correctly
+        </p>
       )}
     </div>
   )
