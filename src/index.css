@@ -27,6 +27,12 @@ body,
   height: 100%;
 }
 
+/* Theme the root too, so the iOS status-bar / safe-area inset and overscroll
+   match the app background instead of flashing the default white. */
+html {
+  background: var(--color-paper);
+}
+
 body {
   margin: 0;
   background: var(--color-paper);
@@ -74,6 +80,18 @@ body {
   animation: shake 0.18s ease both;
   display: inline-block;
 }
+
+/* Minimal slide when switching tabs (swipe / arrows / nav) */
+@keyframes slideNext {
+  from { transform: translateX(18px); opacity: 0.35; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes slidePrev {
+  from { transform: translateX(-18px); opacity: 0.35; }
+  to { transform: translateX(0); opacity: 1; }
+}
+.slide-next { animation: slideNext 0.2s ease-out; }
+.slide-prev { animation: slidePrev 0.2s ease-out; }
 
 /* Reset focus ring to accent */
 *:focus-visible {

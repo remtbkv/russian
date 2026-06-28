@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Keyboard from '../components/Keyboard'
+import Dropdown from '../components/Dropdown'
 import { charToKey, codeToChar } from '../lib/keyboard'
 import { TYPING_LESSONS } from '../lib/content'
 import { load, save } from '../lib/storage'
@@ -232,30 +233,21 @@ export default function Type() {
   return (
     <div className="mx-auto max-w-3xl space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="relative">
-          <select
-            value={lessonId}
-            onChange={(e) => {
-              const v = e.target.value
-              setLessonId(v)
-              const n = TYPING_LESSONS.find((l) => l.id === v)?.items.length ?? 1
-              const start = n > 1 ? Math.floor(Math.random() * n) : 0
-              recent.current = [start]
-              setItemIdx(start)
-            }}
-            className="appearance-none rounded-md border border-[var(--color-line)] bg-[var(--color-card)] py-1.5 pl-3 pr-9 text-sm"
-          >
-            {TYPING_LESSONS.map((l) => (
-              <option key={l.id} value={l.id}>
-                {l.title}
-              </option>
-            ))}
-            <option value={FREE}>Free type</option>
-          </select>
-          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">
-            ▾
-          </span>
-        </div>
+        <Dropdown
+          ariaLabel="Lesson"
+          value={lessonId}
+          options={[
+            ...TYPING_LESSONS.map((l) => ({ value: l.id, label: l.title })),
+            { value: FREE, label: 'Free type' },
+          ]}
+          onChange={(v) => {
+            setLessonId(v)
+            const n = TYPING_LESSONS.find((l) => l.id === v)?.items.length ?? 1
+            const start = n > 1 ? Math.floor(Math.random() * n) : 0
+            recent.current = [start]
+            setItemIdx(start)
+          }}
+        />
 
         {!isFree && (
           <div className="flex items-center gap-4 text-sm text-[var(--color-muted)]">

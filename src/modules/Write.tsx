@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import Keyboard from '../components/Keyboard'
+import Dropdown from '../components/Dropdown'
 import { codeToChar } from '../lib/keyboard'
 import { WRITING_PROMPTS } from '../lib/content'
 import { load, save } from '../lib/storage'
@@ -160,22 +161,13 @@ export default function Write() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
-      <div className="relative">
-        <select
-          value={idx}
-          onChange={(e) => setPrompt(Number(e.target.value))}
-          className="w-full appearance-none rounded-md border border-[var(--color-line)] bg-[var(--color-card)] py-1.5 pl-3 pr-9 text-sm"
-        >
-          {WRITING_PROMPTS.map((p, i) => (
-            <option key={i} value={i}>
-              {p.ru}
-            </option>
-          ))}
-        </select>
-        <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">
-          ▾
-        </span>
-      </div>
+      <Dropdown
+        className="w-full"
+        ariaLabel="Writing prompt"
+        value={String(idx)}
+        options={WRITING_PROMPTS.map((p, i) => ({ value: String(i), label: p.ru }))}
+        onChange={(v) => setPrompt(Number(v))}
+      />
 
       <div className="rounded-lg border border-[var(--color-line)] bg-[var(--color-accent-soft)] p-4">
         <p className="font-cyr text-lg">{prompt.ru}</p>

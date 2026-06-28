@@ -1,15 +1,50 @@
-import { SOUND_GROUPS, forvoUrl } from '../lib/content'
+import { SOUND_GROUPS } from '../lib/content'
+
+function speak(text: string) {
+  try {
+    const synth = window.speechSynthesis
+    if (!synth) return
+    synth.cancel()
+    const u = new SpeechSynthesisUtterance(text)
+    u.lang = 'ru-RU'
+    u.rate = 0.9
+    const ru = synth.getVoices().find((v) => v.lang.toLowerCase().startsWith('ru'))
+    if (ru) u.voice = ru
+    synth.speak(u)
+  } catch {
+    /* speech not available */
+  }
+}
+
+const Speaker = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="12"
+    height="12"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="shrink-0 opacity-50"
+    aria-hidden="true"
+  >
+    <path d="M11 5 6 9H3v6h3l5 4V5z" />
+    <path d="M15.5 8.5a4 4 0 0 1 0 7" />
+  </svg>
+)
 
 function Word({ w }: { w: string }) {
   return (
-    <a
-      href={forvoUrl(w)}
-      target="_blank"
-      rel="noreferrer"
-      className="font-cyr hover:text-[var(--color-accent)] hover:underline"
+    <button
+      type="button"
+      onClick={() => speak(w)}
+      className="inline-flex items-center gap-1 font-cyr hover:text-[var(--color-accent)]"
+      aria-label={`Play ${w}`}
     >
       {w}
-    </a>
+      <Speaker />
+    </button>
   )
 }
 
@@ -17,8 +52,8 @@ export default function Sounds() {
   return (
     <div className="mx-auto max-w-3xl space-y-4">
       <p className="text-sm text-[var(--color-muted)]">
-        Pick a contrast and drill it. Tap any word for native audio on Forvo — say the pairs
-        back-to-back, exaggerating the difference.
+        Pick a contrast and drill it. Tap any word to hear it — say the pairs back-to-back,
+        exaggerating the difference.
       </p>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -34,7 +69,7 @@ export default function Sounds() {
               <ul className="space-y-1.5 text-[15px]">
                 {g.pairs.map((p) => (
                   <li key={p.a} className="flex items-baseline justify-between gap-3">
-                    <span>
+                    <span className="flex items-baseline gap-1.5">
                       <Word w={p.a} /> <span className="text-[var(--color-muted)]">/</span>{' '}
                       <Word w={p.b} />
                     </span>
@@ -45,7 +80,7 @@ export default function Sounds() {
             )}
 
             {g.words && (
-              <p className="flex flex-wrap gap-x-3 gap-y-1 text-[15px]">
+              <p className="flex flex-wrap gap-x-3 gap-y-1.5 text-[15px]">
                 {g.words.map((w) => (
                   <Word key={w} w={w} />
                 ))}

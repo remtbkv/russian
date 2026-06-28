@@ -3,6 +3,38 @@ import { dueCards, parseDeck, review, newCard, type Card } from '../lib/srs'
 import { getCards, setCards } from '../lib/vocabStore'
 import { STARTER_DECK } from '../lib/content'
 import { DECKS } from '../lib/decks'
+import Dropdown from '../components/Dropdown'
+
+const ThumbUp = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="17"
+    height="17"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="3" y="10" width="4" height="11" rx="1" />
+    <path d="M7 10l4.1-8.2a1.8 1.8 0 0 1 3.4.8V8h4.7a2 2 0 0 1 2 2.4l-1.3 7A2 2 0 0 1 17.9 19H7" />
+  </svg>
+)
+const AgainIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M3 12a9 9 0 1 0 2.6-6.4" />
+    <path d="M3 4v5h5" />
+  </svg>
+)
 
 export default function Vocab() {
   const [cards, setLocal] = useState<Card[]>(() => getCards())
@@ -20,11 +52,27 @@ export default function Vocab() {
   const due = useMemo(() => dueCards(cards), [cards])
   const current = due[0]
 
+  const isTouch =
+    typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches
+
   function grade(correct: boolean) {
     if (!current) return
     const next = cards.map((c) => (c.id === current.id ? review(c, correct) : c))
     persist(next)
     setRevealed(false)
+  }
+
+  // Tap the card: first tap reveals; on touch, tapping the right half = Got it,
+  // left half = Again. Desktop uses the buttons/keys, so card-tap only reveals.
+  function tapCard(e: React.MouseEvent<HTMLDivElement>) {
+    if (!revealed) {
+      setRevealed(true)
+      return
+    }
+    if (!isTouch) return
+    const rect = e.currentTarget.getBoundingClientRect()
+    if (e.clientX - rect.left < rect.width / 2) grade(false)
+    else grade(true)
   }
 
   // Keyboard review: Enter = show answer → Got it · Backspace = Again (ignored while typing)
@@ -102,33 +150,58 @@ export default function Vocab() {
           <p className="text-sm text-[var(--color-muted)]">Nothing due right now. Come back later.</p>
         </div>
       ) : (
-        <div className="rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-8 text-center">
+        <div
+          onClick={tapCard}
+          className="relative cursor-pointer select-none rounded-xl border border-[var(--color-line)] bg-[var(--color-card)] p-8 text-center"
+        >
           <p className="break-words font-cyr text-3xl">{current.front}</p>
           {revealed ? (
             <>
               <p className="mt-4 break-words text-lg text-[var(--color-muted)]">{current.back}</p>
-              <div className="mt-6 flex justify-center gap-3">
+              {/* desktop: buttons + keys */}
+              <div className="mt-6 hidden justify-center gap-3 md:flex">
                 <button
-                  onClick={() => grade(false)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    grade(false)
+                  }}
                   className="rounded-md border border-[var(--color-bad)] px-5 py-2 text-sm text-[var(--color-bad)]"
                 >
                   Again <span className="opacity-50">(⌫)</span>
                 </button>
                 <button
-                  onClick={() => grade(true)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    grade(true)
+                  }}
                   className="rounded-md border border-[var(--color-good)] bg-[var(--color-good)] px-5 py-2 text-sm text-white"
                 >
                   Got it <span className="opacity-60">(↵)</span>
                 </button>
               </div>
+              {/* mobile: tap left = again, tap right = got it */}
+              <div className="mt-6 flex items-center justify-between md:hidden">
+                <span className="flex items-center gap-1.5 text-xs text-[var(--color-muted)]">
+                  <AgainIcon /> again
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-[var(--color-good)]">
+                  got it <ThumbUp />
+                </span>
+              </div>
             </>
           ) : (
-            <button
-              onClick={() => setRevealed(true)}
-              className="mt-6 rounded-md border border-[var(--color-line)] px-5 py-2 text-sm"
-            >
-              Show answer <span className="opacity-50">(↵)</span>
-            </button>
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setRevealed(true)
+                }}
+                className="mt-6 hidden rounded-md border border-[var(--color-line)] px-5 py-2 text-sm md:inline-block"
+              >
+                Show answer <span className="opacity-50">(↵)</span>
+              </button>
+              <p className="mt-6 text-sm text-[var(--color-muted)] md:hidden">Tap to reveal</p>
+            </>
           )}
         </div>
       )}
@@ -139,25 +212,16 @@ export default function Vocab() {
           Load a Quizlet set from the Russ ААБ class into your review deck.
         </p>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative min-w-0 flex-1">
-            <select
-              value={deckId}
-              onChange={(e) => {
-                setDeckId(e.target.value)
-                setDeckMsg('')
-              }}
-              className="w-full appearance-none rounded-md border border-[var(--color-line)] bg-[var(--color-card)] py-1.5 pl-3 pr-9 text-sm"
-            >
-              {DECKS.map((d) => (
-                <option key={d.id} value={d.id}>
-                  {d.title} ({d.cards.length})
-                </option>
-              ))}
-            </select>
-            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--color-muted)]">
-              ▾
-            </span>
-          </div>
+          <Dropdown
+            className="min-w-0 flex-1"
+            ariaLabel="Course set"
+            value={deckId}
+            options={DECKS.map((d) => ({ value: d.id, label: `${d.title} (${d.cards.length})` }))}
+            onChange={(v) => {
+              setDeckId(v)
+              setDeckMsg('')
+            }}
+          />
           <button
             onClick={addDeck}
             className="shrink-0 rounded-md bg-[var(--color-accent)] px-4 py-2 text-sm text-white"
@@ -168,7 +232,7 @@ export default function Vocab() {
         {deckMsg && <span className="text-xs text-[var(--color-muted)]">{deckMsg}</span>}
       </div>
 
-      <div className="space-y-2 border-t border-[var(--color-line)] pt-5">
+      <div className="hidden space-y-2 border-t border-[var(--color-line)] pt-5 md:block">
         <div className="flex items-baseline justify-between">
           <h2 className="text-sm font-medium">Import</h2>
           <span className="text-xs text-[var(--color-muted)]">one pair per line</span>
